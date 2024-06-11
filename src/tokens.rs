@@ -64,10 +64,21 @@ impl Tokenizer {
     }
 }
 
+impl Iterator for Tokenizer {
+    type Item = Token;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Ok(x) = self.read_next() {
+            Some(x)
+        } else {
+            None
+        }
+    }
+}
+
 #[test]
 pub fn test_read() {
-    let mut t = Tokenizer::new("sample").unwrap();
-    while let Ok(x) = t.read_next() {
-        println!("{:#?}", x);
+    let t = Tokenizer::new("sample").unwrap();
+    for i in t {
+        println!("{:#?}", i);
     }
 }
