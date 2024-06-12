@@ -2,7 +2,7 @@ use std::fs;
 
 use crate::errors;
 
-#[derive(Default,Debug)]
+#[derive(Clone,Default,Debug)]
 pub enum TokenType {
     IncPtr,
     DecPtr,
@@ -12,21 +12,21 @@ pub enum TokenType {
     Read,
     JumpNext,
     JumpBack,
+    EOF,
     #[default]
     Comment
 }
 
-#[derive(Default,Debug)]
+#[derive(Clone,Default,Debug)]
 pub struct Token {
-    index: usize,
-    kind: TokenType,
+    pub index: usize,
+    pub kind: TokenType,
 }
 
 #[derive(Debug)]
 pub struct Tokenizer {
     data: Vec<u8>,
     cur_idx: usize,
-    result: Vec<Token>
 }
 
 impl Tokenizer {
@@ -35,14 +35,20 @@ impl Tokenizer {
         let t = Tokenizer {
             data: data.into_bytes(),
             cur_idx: 0,
-            result: vec![],
         };
         Ok(t)
     }
 
     fn read_next(&mut self) -> Result<Token, Box<dyn std::error::Error>>{
-        if self.cur_idx == self.data.len() {
+        if self.cur_idx > self.data.len() {
             return Err(Box::new(errors::EOF {}))
+        } else if self.cur_idx == self.data.len() {
+            let t = Ok(Token {
+                index: self.cur_idx,
+                kind: TokenType::EOF,
+            });
+            self.cur_idx += 1;
+            return t;
         }
 
         let mut token = Token::default();

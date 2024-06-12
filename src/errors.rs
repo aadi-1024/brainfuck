@@ -1,5 +1,9 @@
 #[derive(Debug)]
-pub struct EOF {
+pub struct EOF {}
+
+#[derive(Debug)]
+pub struct RuntimeErr {
+    pub message: String,
 }
 
 impl std::fmt::Display for EOF {
@@ -8,4 +12,11 @@ impl std::fmt::Display for EOF {
     }
 }
 
+impl std::fmt::Display for RuntimeErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.message.as_str())
+    }
+}
+
 impl std::error::Error for EOF {}
+impl std::error::Error for RuntimeErr {}
